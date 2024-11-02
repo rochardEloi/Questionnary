@@ -9,7 +9,7 @@ module.exports = (role) => {
             //console.log(req.rawHeaders)
             const decodedToken = token//jwt.verify(token, process.env.TOKEN_SECRET_KEY);
             const userId = decodedToken.userId;
-            const type = decodedToken.type
+            const type = decodedToken.role
             //console.log(role);
             for (let i = 0; i<role.length; i++) {
                 //console.log("Type : "+type+" Role : "+role[i]);
