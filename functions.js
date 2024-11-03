@@ -30,7 +30,7 @@ exports.createQuestionNumberVariable = async () => {
         if(variable) return;
         const newVariable = new Variables({
         name : "question_number",
-        number_value : 0,
+        number_value : 10,
         created_at : new Date(),
         })
         await newVariable.save();

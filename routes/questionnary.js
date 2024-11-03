@@ -9,12 +9,12 @@ router.post("/update/:id", auth(['SYSTEM_ADMINISTRATOR']), updateQuestionnary);
 router.get("/questions", auth(['SYSTEM_ADMINISTRATOR']), getQuestions);
 router.post("/update-question-number", auth(['SYSTEM_ADMINISTRATOR']), updateQuestionNumberVariable);
 router.post("/update-timeout", auth(['SYSTEM_ADMINISTRATOR']), updateTimeoutVariable);
-router.get("/start", auth(['CLIENT']), startQuestionnary);
+router.get("/start", auth(['USER']), startQuestionnary);
 router.post("/update-success-note", auth(['SYSTEM_ADMINISTRATOR']), updateSuccessNoteVariable);
 
 
 //Responses requests here
-router.post("/complete-questionnary", auth(['CLIENT']), completeQuestionnary);
+router.post("/complete-questionnary", auth(['USER']), completeQuestionnary);
 router.use("/get-responses", auth(['SYSTEM_ADMINISTRATOR']), getResponses);
 
 module.exports = router;

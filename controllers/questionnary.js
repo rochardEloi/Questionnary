@@ -169,7 +169,7 @@ exports.startQuestionnary = async (req, res) => {
 
         const returnObject = {
             questions: returnValue,
-            timeout: `${timeout_object.hour}:${timeout_object.minutes}:${timeout_object.seconds}`,
+            timeout: `${timeout_object.hour < 10 ? "0" + timeout_object.hour : timeout_object.hour}:${timeout_object.minutes < 10 ? "0" + timeout_object.minutes : timeout_object.minutes}:${timeout_object.seconds < 10 ? "0" + timeout_object.seconds : timeout_object.seconds}`,
             start_time: startTime,
             end_time: endTime,
         }
