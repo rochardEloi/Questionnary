@@ -105,3 +105,10 @@ exports.uploadIdentityCard = async (req, res) => {
 }
 
 
+exports.downloadID = (req, res)=>{
+    const id = req.params.id 
+    let myFile = "images/"+id
+    res.download(myFile)
+}
+
+
