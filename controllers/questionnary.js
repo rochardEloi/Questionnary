@@ -168,6 +168,10 @@ exports.startQuestionnary = async (req, res) => {
         const user_id = req.session.user_credentials.user_id;
         const isAlreadyAnswered = await Responses.findOne({ user_id: user_id });
 
+        if(isAlreadyAnswered.answers.length > 0){
+            return res.status(400).json({ message: "You have already answered the questionnary"})
+        }
+
         
         if(isAlreadyAnswered) {
             const questions = await getQuestionsIfQuit(user_id);
