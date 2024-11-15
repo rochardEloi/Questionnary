@@ -113,21 +113,54 @@ exports.updateTimeoutVariable = async (req, res) => {
     }
 }
 
-exports.updateSuccessNoteVariable = async (req, res) => {
-    //Success note is a number that represent the success note of the questionnary, it's a percentage
-     
+exports.getTimeoutVariable = async (req, res) => {
     try {
-        const success_note = req.body.success_note;
-        if(isNaN(success_note)) return res.status(400).json({ message: "Invalid success note format" });
-        if(success_note < 0 || success_note > 100) return res.status(400).json({ message: "Success note must be between 0 and 100" });
-        const variable = await Variables.updateOne({ name: "success_note" }, {
-        number_value: parseInt(success_note/100)
-        });
+        const variable = await Variables.findOne({ name: "timeout" });
         return res.status(200).json(variable);
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 }
+
+exports.getSuccessNotes = async (req,res) => {
+    try {
+        const variables = await Variables.find({ name: "success_note" });
+        return res.status(200).json(variables);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+exports.getQuestionNumber = async(req,res)=>{
+    try {
+        const variable = await Variables.findOne({ name: "question_number" });
+        return res.status(200).json(variable);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+exports.updateSuccessNoteVariable = async (req, res) => {
+    try {
+        console.log(req.body);
+        const success_note = Number(req.body.success_note);  // Conversion explicite en nombre
+
+        if (isNaN(success_note)) 
+            return res.status(400).json({ message: "Invalid success note format" });
+        if (success_note < 0 || success_note > 100) 
+            return res.status(400).json({ message: "Success note must be between 0 and 100" });
+
+        const variable = await Variables.updateOne(
+            { name: "success_note" },
+            { number_value: success_note / 100 }  // Utilisation directe pour conserver les décimales
+        );
+
+        return res.status(200).json(variable);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
 
 exports.startQuestionnary = async (req, res) => {
     try {
