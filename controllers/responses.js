@@ -61,7 +61,7 @@ exports.getResponses = async (req, res) => {
 }
 exports.getResponsesByUser = async (req, res) => {
     try {
-        console.log(req.params);
+        //console.log(req.params);
         const responses = await Responses.find({ user_id: req.params.user_id });
         return res.status(200).json(responses);
     } catch (error) {
