@@ -77,6 +77,7 @@ exports.uploadIdentityCard = async (req, res) => {
     try {
         const session = req.session.user_credentials;
         console.log(session);
+        //console.log(req);
         if(!session) return res.status(401).json({message : "Unauthorized"});
         const userId = session.user_id;
         if(!userId) return res.status(400).json({message : "User ID is required"});
@@ -88,6 +89,10 @@ exports.uploadIdentityCard = async (req, res) => {
         } else if(req.body.side === "back") {
             //req.body.identity_card_back = req.file.filename;
             data.itentity_card_back = req.file.filename;
+        }
+        else if(req.body.side === "face"){
+            data.itentity_card_face = req.file.filename;
+
         } else {
             return res.status(400).json({message : "Invalid side"});
         }
@@ -98,4 +103,5 @@ exports.uploadIdentityCard = async (req, res) => {
         res.status(500).json({message : error.message});
     }
 }
+
 

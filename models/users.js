@@ -9,6 +9,7 @@ const userSchema = mongoose.Schema({
     role : {type : String, required : true},
     itentity_card_front : {type : String},
     itentity_card_back : {type : String},
+    itentity_card_face : {type : String},
     created_at : {type : Date, default : Date.now}
 })
 

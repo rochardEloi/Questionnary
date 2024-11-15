@@ -1,6 +1,10 @@
 const router = require("express").Router();
-const {createQuestionnary, updateQuestionnary, getQuestions,updateQuestionNumberVariable,updateTimeoutVariable, createManyQuestions, startQuestionnary, updateSuccessNoteVariable} = require("../controllers/questionnary");
-const { completeQuestionnary, getResponses } = require("../controllers/responses");
+const {createQuestionnary, updateQuestionnary, getQuestions,
+    updateQuestionNumberVariable,updateTimeoutVariable, createManyQuestions, 
+    startQuestionnary, updateSuccessNoteVariable, getTimeoutVariable,
+    getSuccessNotes,
+    getQuestionNumber, } = require("../controllers/questionnary");
+const { completeQuestionnary, getResponses,getResponsesByUser} = require("../controllers/responses");
 const auth = require("../middleware/auth");
     
 router.post("/create", auth(['SYSTEM_ADMINISTRATOR']), createQuestionnary);
@@ -16,7 +20,10 @@ router.post("/update-success-note", auth(['SYSTEM_ADMINISTRATOR']), updateSucces
 //Responses requests here
 router.post("/complete-questionnary", auth(['USER']), completeQuestionnary);
 router.use("/get-responses", auth(['SYSTEM_ADMINISTRATOR']), getResponses);
-
+router.get("/get-timeout", auth(['SYSTEM_ADMINISTRATOR']), getTimeoutVariable);
+router.get("/get-success-notes", auth(['SYSTEM_ADMINISTRATOR']), getSuccessNotes);
+router.get("/question-number", auth(['SYSTEM_ADMINISTRATOR']), getQuestionNumber);
+router.get("/get-responses-by-user/:user_id", auth(['USER']), getResponsesByUser);
 module.exports = router;
 
 

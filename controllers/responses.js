@@ -59,6 +59,15 @@ exports.getResponses = async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 }
+exports.getResponsesByUser = async (req, res) => {
+    try {
+        console.log(req.params);
+        const responses = await Responses.find({ user_id: req.params.user_id });
+        return res.status(200).json(responses);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
 
 exports.getQuestionsIfQuit = async (id) => {
     try {

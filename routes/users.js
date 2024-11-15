@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 router.post('/create', createUser);
 router.use('/users', auth(['SYSTEM_ADMINISTRATOR']), getAllUsers);
 router.post('/login', loginUser);
-router.get('/user/:id', auth(['SYSTEM_ADMINISTRATOR']), getUserById);
+router.get('/user/:id', auth(['USER','SYSTEM_ADMINISTRATOR']), getUserById);
 router.put('/update/:id', auth(['SYSTEM_ADMINISTRATOR', 'USER']), updateUser);
 router.post('/upload-identity-card', multer, auth(['USER']), uploadIdentityCard);
 
