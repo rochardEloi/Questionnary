@@ -5,7 +5,7 @@ var session = require('express-session');
 const MongoDBStore = require('express-mongodb-session')(session);
 const usersRoutes = require('./routes/users');
 const questionnaryRoutes = require('./routes/questionnary');
-const {creatInitialAdmin,createQuestionNumberVariable,createTimeoutVariable, successNote} = require('./functions');
+const {creatInitialAdmin,createQuestionNumberVariable,createTimeoutVariable, successNote, createNextTryVariable} = require('./functions');
 
 const app = express();
 require('dotenv').config()
@@ -50,6 +50,7 @@ mongoose.connect('mongodb://'+process.env.DATABASE_URL, {
     creatInitialAdmin();
     createQuestionNumberVariable();  
     createTimeoutVariable();
+    createNextTryVariable()
     successNote();
 })
 .catch(() => console.log('Connexion à MongoDB échouée !'));

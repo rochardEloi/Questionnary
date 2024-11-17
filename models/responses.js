@@ -14,6 +14,7 @@ const responsesSchema = mongoose.Schema({
     updated_at : {type : Date},
     created_by : {type : String, required : true},
     updated_by : {type : String},
+    next_try_date : {type : Date}
 })
 
 module.exports = mongoose.model("Responses", responsesSchema);

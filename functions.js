@@ -57,6 +57,26 @@ exports.createTimeoutVariable = async () => {
     }
 }
 
+
+exports.createNextTryVariable = async () => {
+    try {
+        const variable = await Variables.findOne({name : "next_try"});
+        if(variable) return;
+        const newVariable = new Variables({
+            name : "next_try",
+            object_value : {
+                hour : 24,
+                minutes : 0,
+                seconds : 0
+            },
+            created_at : new Date(),
+        })
+        await newVariable.save();
+    } catch (error) {
+        console.error("Erreur lors de la création de la variable timeout:", error);
+    }
+}
+
 exports.successNote = async () => {
     try {
         const variable = await Variables.findOne({name : "success_note"});

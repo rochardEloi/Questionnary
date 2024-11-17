@@ -3,7 +3,9 @@ const {createQuestionnary, updateQuestionnary, getQuestions,
     updateQuestionNumberVariable,updateTimeoutVariable, createManyQuestions, 
     startQuestionnary, updateSuccessNoteVariable, getTimeoutVariable,
     getSuccessNotes,
-    getQuestionNumber, } = require("../controllers/questionnary");
+    getQuestionNumber,updateNextTryVariable, 
+    getNextTryVariable,
+    resetExamUser} = require("../controllers/questionnary");
 const { completeQuestionnary, getResponses,getResponsesByUser} = require("../controllers/responses");
 const auth = require("../middleware/auth");
     
@@ -16,6 +18,11 @@ router.post("/update-timeout", auth(['SYSTEM_ADMINISTRATOR']), updateTimeoutVari
 router.get("/start", auth(['USER']), startQuestionnary);
 router.post("/update-success-note", auth(['SYSTEM_ADMINISTRATOR']), updateSuccessNoteVariable);
 
+//New endpoints
+router.post("/update-next-try", auth(['SYSTEM_ADMINISTRATOR']), updateNextTryVariable);
+router.get("/get-timeout-variable", auth(['SYSTEM_ADMINISTRATOR']), getTimeoutVariable);
+router.get("/get-next-try-variable", auth(['SYSTEM_ADMINISTRATOR']), getNextTryVariable);
+router.get("/reset-questionnary", auth(["CLIENT"]), resetExamUser);
 
 //Responses requests here
 router.post("/complete-questionnary", auth(['USER']), completeQuestionnary);
@@ -28,115 +35,3 @@ module.exports = router;
 
 
 
-[
-    {
-        "options": [
-            "H2O",
-            "O2",
-            "CO2"
-        ],
-        "_id": "67225489a3746213c8430b94",
-        "question": "Quel est l'élément chimique de l'eau ?",
-        "answer": "H2O",
-        "__v": 0
-    },
-    {
-        "options": [
-            "anglais",
-            "mandarin",
-            "espagnol"
-        ],
-        "_id": "67225489a3746213c8430b9b",
-        "question": "Quelle est la langue la plus parlée dans le monde ?",
-            "answer": "mandarin",
-        "__v": 0
-    },
-    {
-        "options": [
-            "Mars",
-            "Jupiter",
-            "Saturne"
-        ],
-        "_id": "67225489a3746213c8430b91",
-        "question": "Quelle planète est connue comme la planète rouge ?",
-        "answer": "Mars",
-        "__v": 0
-    },
-    {
-        "options": [
-            "6",
-            "7",
-            "8"
-        ],
-        "_id": "67225489a3746213c8430b9a",
-        "question": "Combien de côtés a un hexagone ?",
-        "answer": "6",
-        "__v": 0
-    },
-    {
-        "options": [
-            "éléphant",
-            "chien",
-            "chat"
-        ],
-        "_id": "67225489a3746213c8430b95",
-        "question": "Quel animal est connu pour sa longue mémoire ?",
-        "answer": "éléphant",
-        "__v": 0
-    },
-    {
-        "options": [
-            "bleu",
-            "vert",
-            "rouge"
-        ],
-        "_id": "67225489a3746213c8430b8c",
-        "question": "Quelle est la couleur du ciel par temps clair ?",
-        "answer": "bleu",
-        "__v": 0
-    },
-    {
-        "options": [
-            "Italie",
-            "Espagne",
-            "Grèce"
-        ],
-        "_id": "67225489a3746213c8430b99",
-        "question": "Quel pays est connu pour la pizza ?",
-        "answer": "Italie",
-        "__v": 0
-    },
-    {
-        "options": [
-            "Vatican",
-            "Monaco",
-            "Malte"
-        ],
-        "_id": "67225489a3746213c8430b92",
-        "question": "Quel est le plus petit pays du monde ?",
-        "answer": "Vatican",
-        "__v": 0
-    },
-    {
-        "options": [
-            "baleine bleue",
-            "éléphant",
-            "requin"
-        ],
-        "_id": "67225489a3746213c8430b98",
-        "question": "Quel est le plus grand mammifère ?",
-        "answer": "baleine bleue",
-        "__v": 0
-    },
-    {
-        "options": [
-            "ronde",
-            "carree",
-            "triangle"
-        ],
-        "_id": "67225489a3746213c8430b8b",
-        "question": "Quelle est la forme de la terre ?",
-        "answer": "ronde",
-        "__v": 0
-    }
-]

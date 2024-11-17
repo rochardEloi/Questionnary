@@ -3,6 +3,7 @@ const Variables = require("../models/variables");
 const questionnaryTypes = ["one_choice", /* "multiple_choice", */ "text",];
 const Responses = require("../models/responses");
 const { getQuestionsIfQuit } = require("./responses");
+const ExamHistory = require("../models/exam_history")
 
 
 
@@ -34,7 +35,7 @@ exports.createManyQuestions = async (req, res) => {
     // }
 
     const questions = req.body.questions;
-    const user_id = req.session.user_credentials.user_id; 
+    const user_id = req.session.user_credentials.user_id;
 
     if (!questions) return res.status(400).json({ message: "Questions are required" });
     try {
@@ -47,7 +48,7 @@ exports.createManyQuestions = async (req, res) => {
         }
 
         return res.status(201).json({
-            message : "Questions created successfully",
+            message: "Questions created successfully",
         });
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -122,7 +123,41 @@ exports.getTimeoutVariable = async (req, res) => {
     }
 }
 
-exports.getSuccessNotes = async (req,res) => {
+exports.updateNextTryVariable = async (req, res) => {
+    //Date format from user : 00:00:00 = hh:mm:ss
+    const timeout = req.body.timeout;
+    const timeout_array = timeout.split(":");
+    const hour = parseInt(timeout_array[0]);
+    const minutes = parseInt(timeout_array[1]);
+    const seconds = parseInt(timeout_array[2]);
+
+    if (isNaN(hour) || isNaN(minutes) || isNaN(seconds)) return res.status(400).json({ message: "Invalid timeout format" });
+    const timeout_object = {
+        hour: hour,
+        minutes: minutes,
+        seconds: seconds,
+    }
+
+    try {
+        const variable = await Variables.updateOne({ name: "next_try" }, {
+            object_value: timeout_object
+        });
+        return res.status(200).json(variable);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+exports.getNextTryVariable = async (req, res) => {
+    try {
+        const variable = await Variables.findOne({ name: "next_try" });
+        return res.status(200).json(variable);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+exports.getSuccessNotes = async (req, res) => {
     try {
         const variables = await Variables.find({ name: "success_note" });
         return res.status(200).json(variables);
@@ -131,7 +166,7 @@ exports.getSuccessNotes = async (req,res) => {
     }
 }
 
-exports.getQuestionNumber = async(req,res)=>{
+exports.getQuestionNumber = async (req, res) => {
     try {
         const variable = await Variables.findOne({ name: "question_number" });
         return res.status(200).json(variable);
@@ -145,9 +180,9 @@ exports.updateSuccessNoteVariable = async (req, res) => {
         console.log(req.body);
         const success_note = Number(req.body.success_note);  // Conversion explicite en nombre
 
-        if (isNaN(success_note)) 
+        if (isNaN(success_note))
             return res.status(400).json({ message: "Invalid success note format" });
-        if (success_note < 0 || success_note > 100) 
+        if (success_note < 0 || success_note > 100)
             return res.status(400).json({ message: "Success note must be between 0 and 100" });
 
         const variable = await Variables.updateOne(
@@ -168,21 +203,23 @@ exports.startQuestionnary = async (req, res) => {
         const user_id = req.session.user_credentials.user_id;
         const isAlreadyAnswered = await Responses.findOne({ user_id: user_id });
 
-        if(isAlreadyAnswered.answers.length > 0){
-            return res.status(400).json({ message: "You have already answered the questionnary"})
+        if (isAlreadyAnswered.answers.length > 0) {
+            return res.status(400).json({ message: "You have already answered the questionnary" })
         }
 
-        
-        if(isAlreadyAnswered) {
+
+        if (isAlreadyAnswered) {
             const questions = await getQuestionsIfQuit(user_id);
             return res.status(200).json(questions);
         }
 
-        const questions = await Questionnary.find({},{created_by: 0, updated_by: 0 , created_at: 0, updated_at: 0});
+        const questions = await Questionnary.find({}, { created_by: 0, updated_by: 0, created_at: 0, updated_at: 0 });
         const question_number = await Variables.findOne({ name: "question_number" });
         const value = question_number.number_value;
         const timeout = await Variables.findOne({ name: "timeout" });
+        const nextTry = await Variables.findOne({ name: "next_try" });
         const timeout_object = timeout.object_value;
+        const nextTry_object = nextTry.object_value;
         const returnValue = [];
 
         if (questions.length < value) return res.status(400).json({ message: "Not enough questions" });
@@ -190,19 +227,20 @@ exports.startQuestionnary = async (req, res) => {
         for (let i = 0; i < value; i++) {
             let randomValue = Math.floor(Math.random() * (questions.length - 1)) + 0;
             let question = questions[randomValue];
-            
+
 
             while (returnValue.includes(question)) {
                 randomValue = Math.floor(Math.random() * (questions.length - 1)) + 0;
                 question = questions[randomValue];
-                
+
             }
-            
+
             returnValue.push(question);
         }
-         
+
         const startTime = Date.now();
         const endTime = startTime + (timeout_object.hour * 3600 + timeout_object.minutes * 60 + timeout_object.seconds) * 1000;
+        const nextTryTime = endTime + (nextTry_object.hour * 3600 + nextTry.minutes * 60 + nextTry.seconds) * 1000
 
         const returnObject = {
             questions: returnValue,
@@ -211,14 +249,24 @@ exports.startQuestionnary = async (req, res) => {
             end_time: endTime,
         }
 
-        const response = new Responses({
+        const d = {
             user_id: user_id,
             generated_questions: returnObject,
             timeout: timeout_object,
             created_at: startTime,
             created_by: user_id,
-        })
+            next_try_date: nextTryTime
+        }
+
+        const response = new Responses(d)
         await response.save();
+
+        const hs = new ExamHistory({
+            user_id: user_id,
+            datas: d
+        })
+
+        await hs.save()
 
         let newReturnValue = returnValue
 
@@ -229,6 +277,32 @@ exports.startQuestionnary = async (req, res) => {
         returnObject.questions = newReturnValue;
 
         return res.status(200).json(returnObject);
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+exports.resetExamUser = async (req, res) => {
+    const user_id = req.params.id
+
+    if (!user_id) {
+        return res.status(400).json({ message: "User ID is required" })
+    }
+
+    try {
+        const response = await Responses.getOne({
+            user_id: user_id
+        })
+
+        if (response.generated_questions.end_time > Date.now() || response.answers.length > 0) {
+            return res.status(400).json({ message: "Exam is already not completed or in progress" })
+        }
+
+        await Responses.deleteOne({
+            user_id: user_id
+        })
+
+        this.startQuestionnary(req, res)
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
