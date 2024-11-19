@@ -290,18 +290,23 @@ exports.resetExamUser = async (req, res) => {
     }
 
     try {
-        const response = await Responses.getOne({
+        const response = await Responses.findOne({
             user_id: user_id
         })
 
-        if (response.generated_questions.end_time > Date.now() || response.answers.length > 0) {
+        if (response.generated_questions.end_time > Date.now() && response.answers.length > 0) {
+            
             return res.status(400).json({ message: "Exam is already not completed or in progress" })
         }
 
-        await Responses.deleteOne({
-            user_id: user_id
-        })
 
+    await Responses.deleteOne({
+            user_id: user_id
+    })
+    
+
+        
+        
         this.startQuestionnary(req, res)
     } catch (error) {
         return res.status(500).json({ message: error.message });

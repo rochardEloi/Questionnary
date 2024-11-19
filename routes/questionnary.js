@@ -22,7 +22,7 @@ router.post("/update-success-note", auth(['SYSTEM_ADMINISTRATOR']), updateSucces
 router.post("/update-next-try", auth(['SYSTEM_ADMINISTRATOR']), updateNextTryVariable);
 router.get("/get-timeout-variable", auth(['SYSTEM_ADMINISTRATOR']), getTimeoutVariable);
 router.get("/get-next-try-variable", auth(['SYSTEM_ADMINISTRATOR']), getNextTryVariable);
-router.get("/reset-questionnary", auth(["CLIENT"]), resetExamUser);
+router.get("/reset-questionnary/:id", auth(["USER"]), resetExamUser);
 
 //Responses requests here
 router.post("/complete-questionnary", auth(['USER']), completeQuestionnary);
