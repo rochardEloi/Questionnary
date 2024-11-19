@@ -203,7 +203,7 @@ exports.startQuestionnary = async (req, res) => {
         const user_id = req.session.user_credentials.user_id;
         const isAlreadyAnswered = await Responses.findOne({ user_id: user_id });
 
-        if (isAlreadyAnswered.answers.length > 0) {
+        if (isAlreadyAnswered?.answers.length > 0) {
             return res.status(400).json({ message: "You have already answered the questionnary" })
         }
 
@@ -240,7 +240,7 @@ exports.startQuestionnary = async (req, res) => {
 
         const startTime = Date.now();
         const endTime = startTime + (timeout_object.hour * 3600 + timeout_object.minutes * 60 + timeout_object.seconds) * 1000;
-        const nextTryTime = endTime + (nextTry_object.hour * 3600 + nextTry.minutes * 60 + nextTry.seconds) * 1000
+        const nextTryTime = endTime + (nextTry_object.hour * 3600 + nextTry_object.minutes * 60 + nextTry_object.seconds) * 1000
 
         const returnObject = {
             questions: returnValue,
