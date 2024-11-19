@@ -294,9 +294,9 @@ exports.resetExamUser = async (req, res) => {
             user_id: user_id
         })
 
-        if (response.generated_questions.end_time > Date.now() && response.answers.length > 0) {
-            
-            return res.status(400).json({ message: "Exam is already not completed or in progress" })
+        if (response.generated_questions.end_time > Date.now() /* && response.answers.length > 0 */){ 
+
+            return res.status(400).json({message: "Exam is already not completed or in progress"})
         }
 
 
