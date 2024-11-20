@@ -259,11 +259,11 @@ exports.startQuestionnary = async (req, res) => {
         }
 
         const response = new Responses(d)
-        await response.save();
+        const exam = await response.save();
 
         const hs = new ExamHistory({
             user_id: user_id,
-            datas: d
+            datas: exam
         })
 
         await hs.save()
@@ -294,17 +294,29 @@ exports.resetExamUser = async (req, res) => {
             user_id: user_id
         })
 
-        if (/*response.generated_questions.end_time > Date.now()  &&*/ response.answers.length > 0 || !response.total_questions) {
+        if (response.next_try_date > Date.now() && (response.answers.length > 0 || !response.total_questions)) {
 
             //return res.status(400).json({ message: "Exam is already not completed or in progress" })
             await Responses.deleteOne({
                 user_id: user_id
             })
+            return res.status(200).json({
+                message : "Test resseted successfully"
+            })
+        }else{
+            if(response.next_try_date > Date.now()){
+                return res.status(401).json({
+                    message : "Reset timeout not reached"
+                })
+            }
+            return res.status(401).json({
+                message : "Exam is already not completed or in progress"
+            })
         }
 
 
 
-        this.startQuestionnary(req, res)
+        //this.startQuestionnary(req, res)
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
