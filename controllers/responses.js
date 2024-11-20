@@ -1,5 +1,6 @@
 const Responses = require("../models/responses");
 const Variables = require("../models/variables");
+const ExamHistory = require("../models/exam_history")
 
 
 exports.completeQuestionnary = async (req, res) => {
@@ -37,13 +38,20 @@ exports.completeQuestionnary = async (req, res) => {
         const percentage = (right_answers / (right_answers + wrong_answers));
         const is_passed = percentage >= success_note_value;
 
-        await Responses.updateOne({ user_id: user_id }, {
+         const responseData = {
             answers: answers,
             score: percentage * 100,
             total_questions: questions.length,
             right_answers_number: right_answers,
             wrong_answers_number: wrong_answers,
             is_passed: is_passed,
+        }
+
+        const exam = await Responses.updateOne({ user_id: user_id }, responseData)
+
+        await ExamHistory.updateOne({"datas._id" : response._id}, {
+            user_id : response.user_id,
+            datas : exam
         })
         return res.status(200).json({ message: "Response completed" });
     } catch (error) {
